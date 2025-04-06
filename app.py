@@ -35,57 +35,6 @@ def recommend(movie):
 
 
 
-
-# # --- Helper Functions for Downloading from Google Drive ---
-# def download_file_from_google_drive(file_id, destination):
-#     """
-#     Downloads a file from Google Drive by handling the confirmation token.
-#     """
-#     URL = "https://docs.google.com/uc?export=download"
-#     session = requests.Session()
-
-#     response = session.get(URL, params={'id': file_id}, stream=True)
-#     token = get_confirm_token(response)
-
-#     if token:
-#         params = {'id': file_id, 'confirm': token}
-#         response = session.get(URL, params=params, stream=True)
-
-#     save_response_content(response, destination)
-
-# def get_confirm_token(response):
-#     for key, value in response.cookies.items():
-#         if key.startswith('download_warning'):
-#             return value
-#     return None
-
-# def save_response_content(response, destination):
-#     CHUNK_SIZE = 32768  # 32KB chunks
-#     with open(destination, "wb") as f:
-#         for chunk in response.iter_content(CHUNK_SIZE):
-#             if chunk:
-#                 f.write(chunk)
-
-# # --- End of Download Helpers ---
-
-# # Google Drive file info
-# file_id = "1F8LRUgA_pDdI2Mw34gCofG-2-IuBzQmV"
-# filename = "similarity.pkl"
-
-# # Download the file if it doesn't exist
-# if not os.path.exists(filename):
-#     download_file_from_google_drive(file_id, filename)
-
-# # Now load the similarity matrix from the downloaded file
-# try:
-#     similarity = pickle.load(open(filename, 'rb'))
-# except Exception as e:
-#     st.error("Error loading similarity matrix: " + str(e))
-#     st.stop()
-
-
-
-
 # Download similarity.pkl if not present
 # here we are accessing the file online
 file_url = "https://drive.google.com/uc?export=download&id=1F8LRUgA_pDdI2Mw34gCofG-2-IuBzQmV"
@@ -101,6 +50,9 @@ similarity = pickle.load(open(filename, 'rb'))
 # for offline file accessing we can use this
 # similarity = pickle.load(open('similarity.pkl', 'rb'))
 
+
+
+
 movies = pickle.load(open('movies_data.pkl', 'rb'))
 movies_name_list = movies['title'].values
 # here it will print the title of every movies
@@ -109,6 +61,8 @@ movies_name_list = movies['title'].values
 movies_name_list = np.insert(movies_name_list, 0, 'Select movie')
 # # by default value of option box is first movie name 
 # # therefore here we are setting first value as Select movies
+
+
 
 st.title('Movie Recommendation System')
 
