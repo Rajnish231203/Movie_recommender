@@ -35,38 +35,19 @@ def recommend(movie):
 
 
 
-# Download similarity.pkl using gdown if not present
-# ------------------------------
-file_id = "1F8LRUgA_pDdI2Mw34gCofG-2-IuBzQmV"
-url = f"https://drive.google.com/uc?id={file_id}"
+# Download similarity.pkl if not present
+# here we are accessing the file online
+file_url = "https://drive.google.com/uc?export=download&id=1F8LRUgA_pDdI2Mw34gCofG-2-IuBzQmV"
 filename = "similarity.pkl"
 
 if not os.path.exists(filename):
-    gdown.download(url, filename, quiet=False)
+    with open(filename, 'wb') as f:
+        response = requests.get(file_url)
+        f.write(response.content)
 
-# ------------------------------
-# Load the similarity matrix
-# ------------------------------
-try:
-    similarity = pickle.load(open(filename, 'rb'))
-except Exception as e:
-    st.error("Error loading similarity matrix: " + str(e))
-    st.stop()
+similarity = pickle.load(open(filename, 'rb'))
 
 
-
-
-# # Download similarity.pkl if not present
-# # here we are accessing the file online
-# file_url = "https://drive.google.com/uc?export=download&id=1F8LRUgA_pDdI2Mw34gCofG-2-IuBzQmV"
-# filename = "similarity.pkl"
-
-# if not os.path.exists(filename):
-#     with open(filename, 'wb') as f:
-#         response = requests.get(file_url)
-#         f.write(response.content)
-
-# similarity = pickle.load(open(filename, 'rb'))
 
 # for offline file accessing we can use this
 # similarity = pickle.load(open('similarity.pkl', 'rb'))
