@@ -1,5 +1,6 @@
 import streamlit as st
 import pickle
+import os
 import pandas as pd
 import numpy as np
 import requests # its help us to hit any API 
@@ -32,8 +33,20 @@ def recommend(movie):
     return recommended_movie
 # so this fuctionn will return us 5 movies based given input movie
 
+# Download similarity.pkl if not present
+# here we are accessing the file online
+file_url = "https://drive.google.com/uc?export=download&id=1F8LRUgA_pDdI2Mw34gCofG-2-IuBzQmV"
+filename = "similarity.pkl"
 
-similarity = pickle.load(open('similarity.pkl', 'rb'))
+if not os.path.exists(filename):
+    with open(filename, 'wb') as f:
+        response = requests.get(file_url)
+        f.write(response.content)
+
+similarity = pickle.load(open(filename, 'rb'))
+
+# for offline file accessing we can use this
+# similarity = pickle.load(open('similarity.pkl', 'rb'))
 
 movies = pickle.load(open('movies_data.pkl', 'rb'))
 movies_name_list = movies['title'].values
