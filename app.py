@@ -33,17 +33,70 @@ def recommend(movie):
     return recommended_movie
 # so this fuctionn will return us 5 movies based given input movie
 
-# Download similarity.pkl if not present
-# here we are accessing the file online
-file_url = "https://drive.google.com/uc?export=download&id=1F8LRUgA_pDdI2Mw34gCofG-2-IuBzQmV"
+
+
+
+# --- Helper Functions for Downloading from Google Drive ---
+def download_file_from_google_drive(file_id, destination):
+    """
+    Downloads a file from Google Drive by handling the confirmation token.
+    """
+    URL = "https://docs.google.com/uc?export=download"
+    session = requests.Session()
+
+    response = session.get(URL, params={'id': file_id}, stream=True)
+    token = get_confirm_token(response)
+
+    if token:
+        params = {'id': file_id, 'confirm': token}
+        response = session.get(URL, params=params, stream=True)
+
+    save_response_content(response, destination)
+
+def get_confirm_token(response):
+    for key, value in response.cookies.items():
+        if key.startswith('download_warning'):
+            return value
+    return None
+
+def save_response_content(response, destination):
+    CHUNK_SIZE = 32768  # 32KB chunks
+    with open(destination, "wb") as f:
+        for chunk in response.iter_content(CHUNK_SIZE):
+            if chunk:
+                f.write(chunk)
+
+# --- End of Download Helpers ---
+
+# Google Drive file info
+file_id = "1F8LRUgA_pDdI2Mw34gCofG-2-IuBzQmV"
 filename = "similarity.pkl"
 
+# Download the file if it doesn't exist
 if not os.path.exists(filename):
-    with open(filename, 'wb') as f:
-        response = requests.get(file_url)
-        f.write(response.content)
+    download_file_from_google_drive(file_id, filename)
 
-similarity = pickle.load(open(filename, 'rb'))
+# Now load the similarity matrix from the downloaded file
+try:
+    similarity = pickle.load(open(filename, 'rb'))
+except Exception as e:
+    st.error("Error loading similarity matrix: " + str(e))
+    st.stop()
+
+
+
+
+# # Download similarity.pkl if not present
+# # here we are accessing the file online
+# file_url = "https://drive.google.com/uc?export=download&id=1F8LRUgA_pDdI2Mw34gCofG-2-IuBzQmV"
+# filename = "similarity.pkl"
+
+# if not os.path.exists(filename):
+#     with open(filename, 'wb') as f:
+#         response = requests.get(file_url)
+#         f.write(response.content)
+
+# similarity = pickle.load(open(filename, 'rb'))
 
 # for offline file accessing we can use this
 # similarity = pickle.load(open('similarity.pkl', 'rb'))
